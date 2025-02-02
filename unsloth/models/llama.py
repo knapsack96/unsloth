@@ -977,8 +977,12 @@ def CausalLM_fast_forward(fast_forward_inference):
                 attention_mask = attention_mask,
             )
         else:
-            causal_mask = xformers.attn_bias.LowerTriangularMask()
-
+            #causal_mask = xformers.attn_bias.LowerTriangularMask()
+            try:
+                causal_mask = xformers.attn_bias.LowerTriangularMask()
+            except AttributeError:
+                import xformers.ops
+                causal_mask = xformers.ops.LowerTriangularMask()  # Use xformers.ops as fallback
             output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
             output_hidden_states = (
                 output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
